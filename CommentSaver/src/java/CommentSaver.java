@@ -5,7 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,23 +25,21 @@ import java.util.logging.Logger;
  */
 public class CommentSaver {
     
-    String baseFilePath;
+    String filePath;
+
     
     public CommentSaver() {
-        baseFilePath = System.getProperty("user.dir") + "/comments";
-        File file = new File(baseFilePath);
+        //create folder
+        filePath = System.getProperty("user.dir") + "/comments";
+        File file = new File(filePath);
         if(!file.exists()) {
             if(! file.mkdir()) {
                 System.err.println("ERROR making new directory");
                 System.exit(1);
             }
-        }    
-    }
-    
-    public void add(String user, String comment) {
-        // if the user doesn' have a file make a new one
-        
-        File file = new File(getUserFilePath(user));
+        }
+        // create file
+        filePath += "/commentFile.txt";
         if(!file.exists()) {
             try {
                 file.createNewFile();
@@ -47,10 +48,29 @@ public class CommentSaver {
                 System.exit(1);
             }
         }    
-        
+    }
+    
+    /**
+     * This will add a comments to the end of the comments file.
+     * User that made the comment, time, and date will be saved as well
+     * @param user
+     * @param comment 
+     */
+    public void add(String user, String comment) {
+        File file = new File(filePath);
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.append(comment + "\n<--->\n");
+            // get the curretn time           
+            Calendar c = Calendar.getInstance();
+            writer.append("<h3>" 
+                    + user + "-- Day:" + c.get(Calendar.DAY_OF_MONTH)
+                    + " Month:" + c.get(Calendar.MONTH)
+                    + " Year:" + c.get(Calendar.YEAR)
+                    + " -- " + c.get(Calendar.HOUR) 
+                    + ":" + c.get(Calendar.MINUTE) 
+                    + ":" +  c.get(Calendar.SECOND) 
+                    + "</h3>");
+            writer.append("<p>" + comment + "</p>");
             writer.close();
         } catch (IOException ex) {
             System.err.println("ERROR writing to file");
@@ -59,21 +79,24 @@ public class CommentSaver {
         
     }
     
-    public String getUserComments(String user) {
-        String filePath = getUserFilePath(user);
-        System.err.println(filePath + " User: " + user);
+    /**
+     * This gets all of the comments from the file, 
+     * and returns it in reverse order
+     * @return 
+     */
+    public String getUserComments() {
+        Deque <String> deque = new LinkedList<String>();
         File file = new File(filePath);
         if(!file.exists()) {
-            System.err.println("Unknown user");
             return "No Comments";
         }
-        String comments = "";
+        
         try{
             BufferedReader reader = new BufferedReader(new FileReader(file));
             
             String com = reader.readLine();
             while (com != null) {
-                comments += com + "\n";
+                deque.addFirst(com + "\n\n");
                 com = reader.readLine();
             }
             
@@ -81,11 +104,14 @@ public class CommentSaver {
             System.err.println("ERROR reader user file");
             System.exit(1);
         }
+        // now to reverse the deque
+        String comments = "";
+        
+        while(!deque.isEmpty()) {
+            comments += deque.pollFirst();
+        }
+        
         return comments;
-    }
-    
-    private String getUserFilePath(String user) {
-        return baseFilePath + "/" + user + ".txt";
     }
     
 }

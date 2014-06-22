@@ -20,7 +20,6 @@
         </form>
         <br/>
         <form action="CommentServlet" method ="GET">
-            Enter a user to view his comments: <input type="text" name="viewuser"/>
             <input type="submit" value="View comments"/>
         </form>
     </body>

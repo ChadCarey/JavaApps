@@ -13,6 +13,7 @@
     </head>
     <body>
         <h1>Please log in to comment</h1>
+        <h3>${invalid}</h3>
         <form action="LogInServlet" method="POST">
             Username: <input type="text" name="user"/>
             Password: <input type="password" name="pass"/>

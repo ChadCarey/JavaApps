@@ -78,6 +78,7 @@ public class LogInServlet extends HttpServlet {
             System.err.println("Forwarding page");
             request.getRequestDispatcher("home.jsp").forward(request, response);
         } else {
+            request.setAttribute("invalid", "Invalid username / password");
             request.getRequestDispatcher("index.jsp").forward(request, response);
         }
     }

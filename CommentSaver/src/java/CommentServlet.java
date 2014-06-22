@@ -54,8 +54,7 @@ public class CommentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String viewuser = (String) request.getParameter("viewuser");
-        request.setAttribute("comments", commentSaver.getUserComments(viewuser));
+        request.setAttribute("comments", commentSaver.getUserComments());
         request.getRequestDispatcher("viewComments.jsp").forward(request, response);
     }
 
@@ -71,10 +70,6 @@ public class CommentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String user = (String)request.getSession().getAttribute("user");
-        if(user == null) {
-            System.err.println("You are not logged in, redirecting");
-            request.getRequestDispatcher("index.jsp").forward(request, response);
-        }
         //String pass = (String)request.getAttribute("pass");
         /*if(!userController.validLogin(user, pass)) {
             request.getRequestDispatcher("index.jsp").forward(request, response);
